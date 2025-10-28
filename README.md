@@ -21,8 +21,11 @@ This script automates the setup of SSH key-based authentication across multiple 
 
 ---
 
-##  Usage
+## 🧰 Usage
 
+[![Watch the demo video](https://img.youtube.com/vi/2nk_TEBbZIA/maxresdefault.jpg)](https://youtu.be/2nk_TEBbZIA)
+
+> 🎥 Click the image above to watch a quick demo video of how the script works.
 
 ## 🔑 SSH Key Generation
 
@@ -50,10 +53,7 @@ Below are two recommended ways to generate keys.
    - If using OpenSSH: you'll have `id_rsa` (private) and `id_rsa.pub` (public).
    - If using MobaXterm/PuTTY: you'll have `.ppk` (private) and a manually copied OpenSSH-format public key.
 
-
 ![MobaXterm Key Generation Screenshot](mobaxterm-keygen.png)
-
-
 
 ---
 
@@ -61,12 +61,14 @@ Below are two recommended ways to generate keys.
 
 If you are on Linux, macOS, or Windows with WSL, you can use:
 
-    ssh-keygen -t rsa -b 4096 -C "your_email@example.com"
+```bash
+ssh-keygen -t rsa -b 4096 -C "your_email@example.com"
+````
 
-- Press **Enter** to accept the default file location (`~/.ssh/id_rsa`).
-- Enter a passphrase (optional, adds extra security).
-- Your public key will be saved as `~/.ssh/id_rsa.pub` (correct format for OpenSSH).
-- Your private key will be saved as `~/.ssh/id_rsa`.
+* Press **Enter** to accept the default file location (`~/.ssh/id_rsa`).
+* Enter a passphrase (optional, adds extra security).
+* Your public key will be saved as `~/.ssh/id_rsa.pub` (correct format for OpenSSH).
+* Your private key will be saved as `~/.ssh/id_rsa`.
 
 ---
 
@@ -74,105 +76,116 @@ If you are on Linux, macOS, or Windows with WSL, you can use:
 
 To check if your public key is in the right format, run:
 
-    cat id_rsa.pub
+```bash
+cat id_rsa.pub
+```
 
 It should start with:
 
-    ssh-rsa AAAAB3...
+```
+ssh-rsa AAAAB3...
+```
 
----
-
-**Why This Matters:**  
+**Why This Matters:**
 If the public key is in the wrong format (like PuTTY format), Linux SSH servers will not match it to your private key, resulting in **Permission denied (publickey)** errors.
-
 
 ---
 
 Now that you have a valid public/private key pair, you can use one of the two setup options below.
 
+---
 
-###  Option 1: Fork and Replace Key
+### ⚙️ Option 1: Fork and Replace Key
 
 1. **Fork this repo** into your GitHub account.
+
 2. In your fork, open the `id_rsa.pub` file and replace its contents with **your public key**.
-   - **If using MobaXterm (Windows)**: Use the manually copied public key from the large text box in MobaKeyGen (Step 4 of [Method 1](#method-1--using-mobaxterm-windows) in SSH Key Generation) 
+
+   * **If using MobaXterm (Windows)**: Use the manually copied public key from the large text box in MobaKeyGen (Step 4 of [Method 1](#method-1--using-mobaxterm-windows))
      **Do NOT** use the `.pub` file downloaded alongside your private key — it may be in the wrong format and cause authentication errors.
-   - **If using OpenSSH**: Copy the contents of your `id_rsa.pub` file (usually in `~/.ssh/id_rsa.pub`) into the one in your fork.
+   * **If using OpenSSH**: Copy the contents of your `id_rsa.pub` file (usually in `~/.ssh/id_rsa.pub`) into the one in your fork.
 
 3. On your target Linux machine:
 
-```
+```bash
 git clone https://github.com/YourUsername/ssh-key-auto-setup.git
-```
-```
 cd ssh-key-auto-setup
 bash setup_ssh.sh
 ```
 
-### Option 2: Clone & Provide Key Path or Paste It
+---
+
+### ⚙️ Option 2: Clone & Provide Key Path or Paste It
+
 Clone the repo:
-```
+
+```bash
 git clone https://github.com/YourUsername/ssh-key-auto-setup.git
 cd ssh-key-auto-setup
 ```
+
 Run the script and follow the prompt:
-```
+
+```bash
 bash setup_ssh.sh /path/to/key
 ```
+
 You can:
 
-Provide a path to your .pub key (e.g., /home/user/.ssh/id_rsa.pub)
-
-Or paste your key directly when prompted
-
+* Provide a path to your `.pub` key (e.g., `/home/user/.ssh/id_rsa.pub`)
+* Or paste your key directly when prompted
 
 ![SSH Username](username.png)
 
+---
 
-<br><br>
 ## 🧠 Why Two Modes?
 
 This script works in **two flexible ways**:
 
-### **🅰️ Fork & Push Your Key**
+### 🅰️ Fork & Push Your Key
 
 > Best when you **cannot transfer files** to your server.
 
-🅱️ Direct Clone & Pass Key
-Best when you can move your key to the server.
+### 🅱️ Direct Clone & Pass Key
 
+> Best when you can move your key to the server.
 
-<br><br>
-### What this script Does
-Adds your key to ~/.ssh/authorized_keys
+---
 
-Updates /etc/ssh/sshd_config to:
+### 🧩 What This Script Does
 
-Disable PasswordAuthentication
+* Adds your key to `~/.ssh/authorized_keys`
+* Updates `/etc/ssh/sshd_config` to:
 
-Enable PubkeyAuthentication
+  * Disable `PasswordAuthentication`
+  * Enable `PubkeyAuthentication`
+  * Set `PermitRootLogin prohibit-password`
+* Backs up existing `sshd_config`
+* Restarts the appropriate SSH service based on detected OS
+* Starts a silent `apt`, `dnf`, or `pacman` update in the background
+* Shows your **public IP address** at the end for easy connection
 
-Set PermitRootLogin prohibit-password
+---
 
-Backs up existing sshd_config
-
-Restarts the appropriate SSH service based on detected OS
-
-Starts a silent apt, dnf, or pacman update in the background
-
-Shows your public IP address at the end for easy connection
-<br><br>
 ### 🛑 Warnings
-Never share your private key
 
-Make sure key-based login works before locking down password access
+* Never share your private key
+* Make sure key-based login works before locking down password access
+* You need sudo access to modify SSH and restart services
 
-You need sudo access to modify SSH and restart services
+---
 
-Example SSH Login
-```
+### 💻 Example SSH Login
+
+```bash
 ssh -i ~/.ssh/your_private_key username@your_public_ip
 ```
 
+---
+
 ### 💡 Contribute or Fork
+
 Feel free to fork, modify, or suggest improvements!
+
+---
