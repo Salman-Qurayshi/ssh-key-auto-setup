@@ -23,7 +23,7 @@ This script automates the setup of SSH key-based authentication across multiple 
 
 ## 🧰 Usage
 
-Video Credits goes to @muzi5622
+Video Credits goes to [@muzi5622](https://github.com/muzi5622)
 
 [![Watch the demo video](https://img.youtube.com/vi/2nk_TEBbZIA/maxresdefault.jpg)](https://youtu.be/2nk_TEBbZIA)
 
